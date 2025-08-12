@@ -1,0 +1,1 @@
+../../Modules/setdrmvariables.sh

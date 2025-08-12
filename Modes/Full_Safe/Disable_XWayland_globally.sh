@@ -1,0 +1,1 @@
+../../Modules/Disable_XWayland_globally.sh

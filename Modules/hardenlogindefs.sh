@@ -1,0 +1,33 @@
+hardenlogindefs(){
+	grep -qE "UMASK		027|YESCRYPT_COST_FACTOR 11" /etc/login.defs && return
+	PATCH_ARGS=("--forward" "--strip=1" "--no-backup-if-mismatch")
+	patch_file_path="/dev/shm/hardenlogindefs.patch"
+
+	tee "$patch_file_path" >/dev/null 2>&1 <<-EOF
+	--- a/etc/login.defs
+	+++ b/etc/login.defs
+	@@ -114,7 +114,7 @@
+ 	# 022 is the default value, but 027, or even 077, could be considered
+ 	# for increased privacy. There is no One True Answer here: each sysadmin
+ 	# must make up their mind.
+	-UMASK		022
+	+UMASK		027
+
+ 	# HOME_MODE is used by useradd(8) and newusers(8) to set the mode for new
+ 	# home directories.
+	@@ -255,7 +255,7 @@
+ 	# If not specified, a cost factor of 5 will be used.
+ 	# The value must be within the 1-11 range.
+ 	#
+	-#YESCRYPT_COST_FACTOR 5
+	+YESCRYPT_COST_FACTOR 11
+
+ 	# Currently CONSOLE_GROUPS is not supported
+	EOF
+
+	patch /etc/login.defs "${PATCH_ARGS[@]}" < "$patch_file_path"
+
+	rm -f "$patch_file_path"
+	print_success "hardenlogindefs completed"
+}
+functions_list="$functions_list hardenlogindefs"

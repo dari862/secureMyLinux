@@ -1,0 +1,1 @@
+../../Modules/enable_flatpak_autoupdate.sh

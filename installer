@@ -1,0 +1,57 @@
+#!/bin/sh
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+CYAN="\033[0;36m"
+RESET="\033[0m"
+
+REPO_PATH="${1:-/opt}"
+bin_path="${2:-/usr/local/bin}"
+
+REPO_URL="https://github.com/dari862/secureMyLinux.git"
+REPO_NAME="secureMyLinux"
+SCRIPT_NAME="secureMyLinux.sh"
+DEST_PATH="$REPO_PATH/$REPO_NAME"
+SCRIPT_PATH="$DEST_PATH/$SCRIPT_NAME"
+TARGET_LINK="$bin_path/$REPO_NAME"
+
+print_info() {
+	printf "${CYAN}[*] %s${RESET}\n" "$1"
+}
+
+print_success() {
+	printf "${GREEN}[+] %s${RESET}\n" "$1"
+}
+
+print_warning() {
+	printf "${YELLOW}[!] %s${RESET}\n" "$1"
+}
+
+print_error() {
+	printf "${RED}[-] %s${RESET}\n" "$1" >&2
+	exit 1
+}
+
+[ "$(id -u)" -ne 0 ] && print_error "This script must be run as root."
+
+if [ ! -d "$DEST_PATH/.git" ]; then
+	print_info "Cloning repository into $DEST_PATH..."
+	if git clone --quiet "$REPO_URL" "$DEST_PATH"; then
+		print_success "Repository cloned successfully."
+	else
+		print_error "Failed to clone repository."
+	fi
+else
+	print_warning "Repository already exists at $DEST_PATH."
+fi
+
+[ ! -f "$SCRIPT_PATH" ] && print_error "Script $SCRIPT_PATH not found."
+
+# Create symlink and make script executable
+ln -sf "$SCRIPT_PATH" "$TARGET_LINK"
+chmod +x "$SCRIPT_PATH"
+print_success "Linked $SCRIPT_PATH to $TARGET_LINK"
+
+# Execute the script
+print_info "Executing $TARGET_LINK --full"
+"$TARGET_LINK" --full "$bin_path"
