@@ -4,6 +4,10 @@ toggle_bluetooth_modules(){
 	tee "$toggle_bluetooth_modules_path" >/dev/null <<-EOF
 	#!/bin/bash
 	# Toggle bluetooth kernel modules on/off (requires reboot)
+	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  		printf "Please run as root"
+  		exit 1
+	fi
 	BLUE_MOD_FILE="/etc/modprobe.d/99-bluetooth.conf"
 	if test -e $BLUE_MOD_FILE; then
 		rm -f $BLUE_MOD_FILE

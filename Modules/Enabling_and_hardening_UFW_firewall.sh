@@ -1,5 +1,5 @@
 Enabling_and_hardening_UFW_firewall(){
-	[ "$(sudo ufw status | grep Status | awk '{print $2}')" == "active" ] && return
+	[ "$(ufw status | grep Status | awk '{print $2}')" == "active" ] && return
 	print_info "Enabling and hardening UFW firewall"
 	apt install -y ufw
 	ufw default deny incoming

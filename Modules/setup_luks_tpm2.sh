@@ -16,7 +16,10 @@ setup_luks_tpm2() {
   
   	tee "$setup_tpm2_luks_path"  > /dev/null <<-'EOF'
 	#!/bin/bash
-
+	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  		printf "Please run as root"
+  		exit 1
+	fi
 	DEVICE=$1
 	[ -z "$DEVICE" ] && echo "Usage: $0 /dev/sdX" && exit 1
 

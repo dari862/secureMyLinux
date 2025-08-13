@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
-
-#todo:
-#=========================
-#Provide system auditing tooling to verify the status of system hardening and provide users with suggestions.
-#Provide toggles for a variety of the hardening set by default.
-
+#todo: Provide system auditing tooling to verify the status of system hardening and provide users with suggestions.
 set -euo pipefail
+
 __opt="${1:-}"
 installation_mode="${2:-}"
 if [ "$installation_mode" != "ask_before_install" ];then
@@ -107,7 +103,7 @@ run_module(){
 init_script(){
 	print_info "Debian Hardening Script Starting..."
 	# Ensure script is run as root
-	if [ "$EUID" -ne 0 ]; then
+	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
   		print_error "Please run as root"
 	fi
 	print_info "Running full system hardening in safe mode..."

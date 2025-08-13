@@ -4,6 +4,10 @@ toggle_anticheat_support_modules(){
 	
 	tee "$toggle_anticheat_support_path" >/dev/null <<-EOF
 	#!/bin/bash
+	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  		printf "Please run as root"
+  		exit 1
+	fi
 	# Toggle anticheat support by changing ptrace scope (requires restart)
 	SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
 	if grep -q '^kernel.yama.ptrace_scope = 3' "$SYSCTL_HARDENING_FILE"; then

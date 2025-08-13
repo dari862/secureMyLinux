@@ -4,6 +4,10 @@ create_manage_flatpak_hardening_script(){
 	[ -f "$manage_flatpak_hardening" ] && return
 	tee "$manage_flatpak_hardening" >/dev/null <<-EOF
 	#!/bin/bash
+	if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  		printf "Please run as root"
+  		exit 1
+	fi
 	harden_flatpak(){
 		# Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
     	flatpak_id="${1:-}"
