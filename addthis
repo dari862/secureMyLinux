@@ -1,0 +1,47 @@
+#!/bin/sh
+DISTRO=debian
+case $DISTRO in
+    ubuntu|debian)
+        sudo apt install -y firejail firejail-profiles
+        ;;
+    fedora)
+        sudo dnf install -y firejail
+        ;;
+    arch|manjaro)
+        sudo pacman -S --noconfirm firejail
+        ;;
+esac
+
+# Configure Firejail
+sudo firecfg
+
+# Create custom profile for browsers
+sudo mkdir -p /etc/firejail
+sudo tee /etc/firejail/browser-common.local >/dev/null 2>&1 <<EOF
+# Custom browser security profile
+caps.drop all
+netfilter
+noroot
+protocol unix,inet,inet6,netlink
+seccomp
+shell none
+nogroups
+nonewprivs
+
+private-cache
+private-dev
+private-tmp
+private-home=.mozilla,.config,.cache,Downloads
+
+disable-mnt
+noexec /tmp
+EOF
+
+for browser in firefox-esr firefox brave-browser;do
+sudo tee /etc/firejail/${browser}.profile >/dev/null 2>&1 <<EOF
+include /etc/firejail/browser-common.local
+
+# Firefox-specific rules (optional)
+private-bin ${browser}
+EOF
+done
