@@ -1,4 +1,8 @@
 #!/bin/sh
+# work on way to add secureboot support
+# work on way to add grub password
+
+
 DISTRO=debian
 case $DISTRO in
     ubuntu|debian)
