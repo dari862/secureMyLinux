@@ -1,0 +1,1 @@
+/home/dari/Desktop/secureMyLinux/Modules/Add_secureboot_support.sh

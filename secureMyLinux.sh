@@ -140,6 +140,19 @@ _safe_full(){
 	print_success "Hardening complete."
 }
 
+sread() {
+    printf '%s: ' "$2"
+
+    # Disable terminal printing while the user inputs their
+    # password. POSIX 'read' has no '-s' flag which would
+    # effectively do the same thing.
+    stty -echo
+    read -r "$1"
+    stty echo
+
+    printf '\n'
+}
+
 case "$__opt" in
 	--list)			list_modules && exit ;;
 	--menu)			menu_modules ;;
